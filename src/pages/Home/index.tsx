@@ -37,7 +37,7 @@ const Home: FC = () => {
       })}
 
       <button
-        className="float-end block rounded bg-gray-600 px-4 py-2 text-white"
+        className="mx-auto block rounded bg-gray-600 px-4 py-2 text-white md:float-end"
         onClick={() => {
           navigate("/quizz");
         }}

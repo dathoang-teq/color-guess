@@ -63,22 +63,24 @@ const Quizz: FC = () => {
     <div>
       <h1 className="mb-4 text-center text-3xl font-bold">Quizz Color Pair</h1>
       <div>
-        <div className="flex items-center gap-2 text-2xl">
-          What color is on the{" "}
-          <span className="font-bold text-red-700 uppercase">
-            {currentPosition}
-          </span>{" "}
-          of{" "}
-          <span
-            className={cn(
-              "inline-block h-10 w-20 rounded",
-              COLORS_MAP[currentColor]
-            )}
-          />
-          ?
+        <div className="block items-center gap-2 text-2xl md:flex">
+          <div>What color is on the </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-red-700 uppercase">
+              {currentPosition}
+            </span>{" "}
+            of{" "}
+            <span
+              className={cn(
+                "inline-block h-10 w-20 rounded",
+                COLORS_MAP[currentColor]
+              )}
+            />{" "}
+            ?
+          </div>
         </div>
 
-        <div className="mt-8 mb-4 flex gap-20">
+        <div className="my-8 flex flex-col gap-10 md:mb-4 md:flex-row md:gap-20">
           {answerOptions.map((color) => (
             <button
               key={color}
@@ -104,7 +106,7 @@ const Quizz: FC = () => {
         </div>
 
         <button
-          className="float-end mt-4 cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white"
+          className="mx-auto mt-4 block cursor-pointer rounded bg-gray-600 px-4 py-2 font-bold text-white md:float-end md:mx-0"
           onClick={handleNextQuestion}
         >
           Next question
