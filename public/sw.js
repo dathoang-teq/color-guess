@@ -23,11 +23,6 @@ self.addEventListener('fetch', function(event) {
 				return response;
 			}
 			return fetch(event.request).then(function(response) {
-				if (langUrlRe.exec(event.request.url)) {
-					caches.open(CACHE_NAME).then(function(cache) {
-						cache.put(langUrlRe.exec(event.request.url)[1], response);
-					});
-				}
 				return response.clone();
 			});
 		})
