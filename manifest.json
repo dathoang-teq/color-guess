@@ -1,0 +1,15 @@
+{
+  "name": "Color Guess",
+  "short_name": "Color Guess",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "iconApp.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ]
+}
