@@ -1,43 +1,30 @@
-import { type FC, useEffect, useRef } from "react";
-import { useNavigate } from "react-router";
+import { type FC, useEffect } from "react";
+import { useBlocker } from "react-router";
 
 const TestPopState: FC = () => {
-  const navigate = useNavigate();
-  const hasChanges = useRef(true);
+  const blocker = useBlocker(true);
 
   useEffect(() => {
-    // Push an extra history entry so we can intercept the back action
-    window.history.pushState(null, "", window.location.href);
+    if (blocker.state !== "blocked") return;
 
-    const handlePopState = () => {
-      if (hasChanges.current) {
-        const confirmed = window.confirm(
-          "You have unsaved changes. Are you sure you want to leave?"
-        );
-        if (confirmed) {
-          hasChanges.current = false;
-          navigate(-1);
-        } else {
-          // Re-push so back/forward stays interceptable
-          window.history.pushState(null, "", window.location.href);
-        }
-      }
-    };
+    const confirmed = window.confirm(
+      "You have unsaved changes. Are you sure you want to leave?"
+    );
+    if (confirmed) {
+      blocker.proceed();
+    } else {
+      blocker.reset();
+    }
+  }, [blocker]);
 
+  useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasChanges.current) {
-        e.preventDefault();
-      }
+      e.preventDefault();
     };
 
-    window.addEventListener("popstate", handlePopState);
     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [navigate]);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   return (
     <div className="flex flex-col gap-6">
