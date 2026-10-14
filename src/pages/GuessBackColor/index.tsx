@@ -16,29 +16,63 @@ const HORIZONTAL_OPTIONS = ["left", "right"] as const;
 type Vertical = (typeof VERTICAL_OPTIONS)[number];
 type Horizontal = (typeof HORIZONTAL_OPTIONS)[number];
 
+type Combination =
+  | (typeof COLOR_COMBINATION_TOP_RIGHT)[number]
+  | (typeof COLOR_COMBINATION_TOP_LEFT)[number]
+  | (typeof COLOR_COMBINATION_BOTTOM_RIGHT)[number]
+  | (typeof COLOR_COMBINATION_BOTTOM_LEFT)[number];
+
+type Combinations = Record<Vertical, Record<Horizontal, Combination[]>>;
+
+const COMBINATIONS: Combinations = {
+  top: {
+    right: COLOR_COMBINATION_TOP_RIGHT,
+    left: COLOR_COMBINATION_TOP_LEFT,
+  },
+  bottom: {
+    right: COLOR_COMBINATION_BOTTOM_RIGHT,
+    left: COLOR_COMBINATION_BOTTOM_LEFT,
+  },
+};
+
+const copyCombinations = (): Combinations => ({
+  top: {
+    right: [...COMBINATIONS.top.right],
+    left: [...COMBINATIONS.top.left],
+  },
+  bottom: {
+    right: [...COMBINATIONS.bottom.right],
+    left: [...COMBINATIONS.bottom.left],
+  },
+});
+
 const GuessBackColor: FC = () => {
   const [vertical, setVertical] = useState<Vertical>(VERTICAL_OPTIONS[0]);
   const [horizontal, setHorizontal] = useState<Horizontal>(
     HORIZONTAL_OPTIONS[0]
   );
   const [index, setIndex] = useState(0);
+  const [remaining, setRemaining] = useState(copyCombinations);
 
-  const COMBINATIONS = {
-    top: {
-      right: COLOR_COMBINATION_TOP_RIGHT,
-      left: COLOR_COMBINATION_TOP_LEFT,
-    },
-    bottom: {
-      right: COLOR_COMBINATION_BOTTOM_RIGHT,
-      left: COLOR_COMBINATION_BOTTOM_LEFT,
-    },
-  };
   const combinations = COMBINATIONS[vertical][horizontal];
   const current = combinations[index];
   const answer = "back" in current ? current.back : current.bottom;
 
   const handleRandom = () => {
-    setIndex(Math.floor(Math.random() * combinations.length));
+    const unused = remaining[vertical][horizontal];
+    // refill once every value has been used
+    const source = unused.length > 0 ? unused : combinations;
+    console.log("source:", source);
+    const picked = source[Math.floor(Math.random() * source.length)];
+
+    setIndex(combinations.indexOf(picked));
+    setRemaining((prev) => ({
+      ...prev,
+      [vertical]: {
+        ...prev[vertical],
+        [horizontal]: source.filter((item) => item !== picked),
+      },
+    }));
   };
 
   return (

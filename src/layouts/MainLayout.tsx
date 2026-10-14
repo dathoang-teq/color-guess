@@ -9,7 +9,7 @@ const MainLayout: FC<PropsWithChildren> = () => {
   const isGuessBackColor = pathname === "/guess-back-color";
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-200">
+    <div className="flex min-h-dvh flex-col bg-gray-200">
       <Header />
       <div className="my-4 flex flex-1 justify-center md:my-0 md:items-center">
         <div
