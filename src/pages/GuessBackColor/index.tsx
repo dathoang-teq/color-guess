@@ -13,18 +13,21 @@ import {
 const VERTICAL_OPTIONS = ["top", "bottom"] as const;
 const HORIZONTAL_OPTIONS = ["left", "right"] as const;
 
-type Vertical = (typeof VERTICAL_OPTIONS)[number];
-type Horizontal = (typeof HORIZONTAL_OPTIONS)[number];
+type VerticalType = (typeof VERTICAL_OPTIONS)[number];
+type HorizontalType = (typeof HORIZONTAL_OPTIONS)[number];
 
-type Combination =
+type CombinationType =
   | (typeof COLOR_COMBINATION_TOP_RIGHT)[number]
   | (typeof COLOR_COMBINATION_TOP_LEFT)[number]
   | (typeof COLOR_COMBINATION_BOTTOM_RIGHT)[number]
   | (typeof COLOR_COMBINATION_BOTTOM_LEFT)[number];
 
-type Combinations = Record<Vertical, Record<Horizontal, Combination[]>>;
+type CombinationsType = Record<
+  VerticalType,
+  Record<HorizontalType, CombinationType[]>
+>;
 
-const COMBINATIONS: Combinations = {
+const COMBINATIONS: CombinationsType = {
   top: {
     right: COLOR_COMBINATION_TOP_RIGHT,
     left: COLOR_COMBINATION_TOP_LEFT,
@@ -35,7 +38,7 @@ const COMBINATIONS: Combinations = {
   },
 };
 
-const copyCombinations = (): Combinations => ({
+const copyCombinations = (): CombinationsType => ({
   top: {
     right: [...COMBINATIONS.top.right],
     left: [...COMBINATIONS.top.left],
@@ -47,8 +50,8 @@ const copyCombinations = (): Combinations => ({
 });
 
 const GuessBackColor: FC = () => {
-  const [vertical, setVertical] = useState<Vertical>(VERTICAL_OPTIONS[0]);
-  const [horizontal, setHorizontal] = useState<Horizontal>(
+  const [vertical, setVertical] = useState<VerticalType>(VERTICAL_OPTIONS[0]);
+  const [horizontal, setHorizontal] = useState<HorizontalType>(
     HORIZONTAL_OPTIONS[0]
   );
   const [index, setIndex] = useState(0);
@@ -62,7 +65,6 @@ const GuessBackColor: FC = () => {
     const unused = remaining[vertical][horizontal];
     // refill once every value has been used
     const source = unused.length > 0 ? unused : combinations;
-    console.log("source:", source);
     const picked = source[Math.floor(Math.random() * source.length)];
 
     setIndex(combinations.indexOf(picked));
