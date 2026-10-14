@@ -4,9 +4,11 @@ export const COLORS_MAP = {
   blue: "bg-blue-600",
   orange: "bg-orange-500",
   white: "bg-white",
+  yellow: "bg-yellow-400",
+  black: "bg-black",
 };
 
-export const COLORS = ["red", "blue", "orange", "green", "white"];
+export const COLORS = ["red", "blue", "orange", "green"];
 
 export const COLOR_GROUP: Record<string, readonly string[]> = {
   red: ["green", "red", "blue"],

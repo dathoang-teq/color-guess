@@ -1,90 +1,64 @@
-import { useState } from "react";
-import type { FC } from "react";
+import { type FC, useState } from "react";
 
-import Face from "@/components/Face";
+import AnswerArea from "@/components/AnswerArea";
+import Cube from "@/components/Cube";
+import Tabs from "@/components/Tabs";
 import {
-  CORNER_CONFIGS,
-  HALF,
-  WHITE_COMBOS_BY_POSITION,
-} from "@/constants/GuessBackColor";
-import type { ColorKey, CornerType } from "@/interfaces/GuessBackColor";
-import { COLORS_MAP } from "@/utils/constants";
-import { cn } from "@/utils/functions";
-import {
-  applyFromCombo,
-  createFace,
-  cycleColor,
-  randomWhiteCombo,
-} from "@/utils/GuessBackColor";
+  COLOR_COMBINATION_BOTTOM_LEFT,
+  COLOR_COMBINATION_BOTTOM_RIGHT,
+  COLOR_COMBINATION_TOP_LEFT,
+  COLOR_COMBINATION_TOP_RIGHT,
+} from "@/constants/ColorCombinations";
+
+const VERTICAL_OPTIONS = ["top", "bottom"] as const;
+const HORIZONTAL_OPTIONS = ["left", "right"] as const;
+
+type Vertical = (typeof VERTICAL_OPTIONS)[number];
+type Horizontal = (typeof HORIZONTAL_OPTIONS)[number];
 
 const GuessBackColor: FC = () => {
-  const [cornerType, setCornerType] = useState<CornerType>("front-left");
-  const [top, setTop] = useState(createFace("white"));
-  const [sideA, setSideA] = useState(createFace("red"));
-  const [sideB, setSideB] = useState(createFace("green"));
+  const [vertical, setVertical] = useState<Vertical>(VERTICAL_OPTIONS[0]);
+  const [horizontal, setHorizontal] = useState<Horizontal>(
+    HORIZONTAL_OPTIONS[0]
+  );
+  const [index, setIndex] = useState(0);
 
-  const config = CORNER_CONFIGS[cornerType];
-  const handleApply = (combo: [ColorKey, ColorKey, ColorKey]) =>
-    applyFromCombo(combo, setCornerType, setTop, setSideA, setSideB);
+  const COMBINATIONS = {
+    top: {
+      right: COLOR_COMBINATION_TOP_RIGHT,
+      left: COLOR_COMBINATION_TOP_LEFT,
+    },
+    bottom: {
+      right: COLOR_COMBINATION_BOTTOM_RIGHT,
+      left: COLOR_COMBINATION_BOTTOM_LEFT,
+    },
+  };
+  const combinations = COMBINATIONS[vertical][horizontal];
+  const current = combinations[index];
+  const answer = "back" in current ? current.back : current.bottom;
+
+  const handleRandom = () => {
+    setIndex(Math.floor(Math.random() * combinations.length));
+  };
 
   return (
-    <div className="flex size-full flex-col items-center gap-8 p-8">
-      <div className="flex items-center justify-center perspective-[1000px]">
-        <div
-          className="relative size-60 transform-3d"
-          style={{ transform: config.cubeTransform }}
-        >
-          <Face
-            tiles={top}
-            transform={`rotateX(90deg) translateZ(${HALF}px)`}
-            onTileClick={(row, col) => cycleColor(setTop, row, col)}
-            highlight={config.top.highlight}
-          />
-          <Face
-            tiles={sideA}
-            transform={config.sideA.transform}
-            onTileClick={(row, col) => cycleColor(setSideA, row, col)}
-            highlight={config.sideA.highlight}
-          />
-          <Face
-            tiles={sideB}
-            transform={config.sideB.transform}
-            onTileClick={(row, col) => cycleColor(setSideB, row, col)}
-            highlight={config.sideB.highlight}
-          />
-        </div>
+    <div className="flex size-full flex-col items-center gap-8">
+      <div className="flex w-full flex-col items-center justify-between gap-4 md:flex-row md:items-baseline">
+        <Tabs data={VERTICAL_OPTIONS} onChange={setVertical} />
+        <Tabs data={HORIZONTAL_OPTIONS} onChange={setHorizontal} />
       </div>
 
+      <Cube data={current} />
+
+      <AnswerArea key={`${vertical}-${horizontal}-${index}`} answer={answer} />
+
       <button
-        onClick={() => handleApply(randomWhiteCombo())}
-        className="mt-28 rounded-lg bg-gray-700 px-6 py-2 font-semibold text-white hover:bg-gray-600"
+        type="button"
+        className="mt-8 rounded-md bg-white px-6 py-2 font-semibold text-gray-900"
+        onClick={handleRandom}
       >
         Random
       </button>
-
-      <div className="flex flex-col gap-4">
-        {WHITE_COMBOS_BY_POSITION.map(({ label, combos }) => (
-          <div key={label} className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-gray-400">{label}</p>
-            <div className="grid grid-cols-4 gap-2">
-              {combos.map((combo, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleApply(combo)}
-                  className="flex items-center gap-1 rounded-lg border border-gray-600 p-2 hover:border-gray-300"
-                >
-                  {combo.map((color, ci) => (
-                    <div
-                      key={ci}
-                      className={cn("size-5 rounded", COLORS_MAP[color])}
-                    />
-                  ))}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

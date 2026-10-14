@@ -36,14 +36,25 @@ const Home: FC = () => {
         );
       })}
 
-      <button
-        className="mx-auto mt-24 block rounded bg-gray-600 px-4 py-2 text-white md:float-end"
-        onClick={() => {
-          navigate("/quizz");
-        }}
-      >
-        Start quizz
-      </button>
+      <div className="mt-24 flex flex-col items-center justify-between gap-4 md:flex-row">
+        <button
+          className="rounded bg-gray-600 px-4 py-2 text-white"
+          onClick={() => {
+            navigate("/guess-back-color");
+          }}
+        >
+          Guess hidden color
+        </button>
+
+        <button
+          className="rounded bg-gray-600 px-4 py-2 text-white"
+          onClick={() => {
+            navigate("/quizz");
+          }}
+        >
+          Start quizz
+        </button>
+      </div>
     </div>
   );
 };
